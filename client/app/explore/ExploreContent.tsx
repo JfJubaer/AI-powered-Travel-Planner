@@ -28,7 +28,7 @@ const ITEMS_PER_PAGE = 12;
 const DEBOUNCE_DELAY = 400;
 const DEFAULT_SORT: ExploreFilters["sortBy"] = "rating";
 
-export default function ExplorePage() {
+export default function ExploreContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
