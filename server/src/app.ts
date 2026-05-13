@@ -18,7 +18,7 @@ export function createApp() {
     cors({
       origin:
         process.env.CLIENT_URL ??
-        "https://ai-powered-travel-planner-client.vercel.app/",
+        "https://ai-powered-travel-planner-client.vercel.app",
       credentials: true,
     }),
   );
