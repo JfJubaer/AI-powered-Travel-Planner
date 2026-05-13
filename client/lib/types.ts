@@ -1,19 +1,18 @@
 export interface TripDay {
   day: number;
   title: string;
-  morning: string;
-  afternoon: string;
-  evening: string;
-  localTip: string;
+  activities: string[];
+  foodSuggestions: string[];
+  estimatedCost: number;
+  travelTips: string[];
 }
 
 export interface ItineraryResult {
   destination: string;
-  summary: string;
+  overview: string;
   estimatedTotal: number;
-  bestFor: string[];
+  currency: string;
   itinerary: TripDay[];
-  bookingTips: string[];
 }
 
 export interface RecommendationResult {

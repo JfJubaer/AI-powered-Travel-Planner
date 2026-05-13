@@ -63,14 +63,9 @@ export async function registerUser(payload: RegisterPayload) {
 
 export interface ItineraryPayload {
   destination: string;
-  startDate: string;
   durationDays: number;
-  travelers: number;
   budget: number;
   style: string;
-  pace: string;
-  interests: string[];
-  role: Role;
 }
 
 export interface RecommendationPayload {

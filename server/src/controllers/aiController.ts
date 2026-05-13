@@ -1,31 +1,33 @@
 import type { Request, Response } from "express";
-import { isDatabaseConnected } from "../lib/database.js";
-import { Trip } from "../models/Trip.js";
-import { generateItinerary, recommendDestinations } from "../services/aiService.js";
+import {
+  generateItinerary,
+  recommendDestinations,
+} from "../services/aiService.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { HttpError } from "../utils/httpError.js";
 
-export const createItinerary = asyncHandler(async (req: Request, res: Response) => {
-  const itinerary = await generateItinerary(req.body);
+export const createItinerary = asyncHandler(
+  async (req: Request, res: Response) => {
+    let itinerary;
 
-  if (isDatabaseConnected()) {
-    await Trip.create({
-      user: req.user?.id,
-      destination: itinerary.destination,
-      durationDays: req.body.durationDays,
-      travelers: req.body.travelers,
-      budget: req.body.budget,
-      style: req.body.style,
-      pace: req.body.pace,
-      itinerary: itinerary.itinerary,
-      estimatedTotal: itinerary.estimatedTotal,
-      createdByRole: req.user?.role ?? req.body.role
-    });
-  }
+    try {
+      itinerary = await generateItinerary(req.body);
+    } catch (error) {
+      throw new HttpError(
+        503,
+        error instanceof Error
+          ? error.message
+          : "Unable to generate itinerary right now.",
+      );
+    }
 
-  res.json(itinerary);
-});
+    res.json(itinerary);
+  },
+);
 
-export const createRecommendations = asyncHandler(async (req: Request, res: Response) => {
-  const recommendations = await recommendDestinations(req.body);
-  res.json({ recommendations });
-});
+export const createRecommendations = asyncHandler(
+  async (req: Request, res: Response) => {
+    const recommendations = await recommendDestinations(req.body);
+    res.json({ recommendations });
+  },
+);
