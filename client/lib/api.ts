@@ -1,6 +1,7 @@
 import axios from "axios";
 import type {
   DashboardMetric,
+  DestinationDetails,
   DashboardTrip,
   Destination,
   ItineraryResult,
@@ -67,6 +68,11 @@ export async function getDestinations(filters?: DestinationFilters) {
   const { data } = await api.get<DestinationListResponse>("/destinations", {
     params: filters
   });
+  return data;
+}
+
+export async function getDestinationDetails(id: string) {
+  const { data } = await api.get<DestinationDetails>(`/destinations/${id}`);
   return data;
 }
 

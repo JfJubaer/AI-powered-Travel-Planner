@@ -173,7 +173,7 @@ export function HomepageSections() {
         ) : (
           <div className="mt-8 grid items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-4">
             {popularDestinations.map((destination) => (
-              <DestinationCard key={`${destination.name}-${destination.country}`} destination={destination} detailsHref="/explore" />
+              <DestinationCard key={`${destination.name}-${destination.country}`} destination={destination} />
             ))}
           </div>
         )}

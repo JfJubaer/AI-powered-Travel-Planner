@@ -3,10 +3,13 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { getDestinationHref } from "@/lib/destinations";
 import type { Destination } from "@/lib/types";
 import { ArrowRight, MapPin, Star, WalletCards } from "lucide-react";
 
-export function DestinationCard({ destination, detailsHref = "/planner" }: { destination: Destination; detailsHref?: string }) {
+export function DestinationCard({ destination, detailsHref }: { destination: Destination; detailsHref?: string }) {
+  const href = detailsHref ?? getDestinationHref(destination);
+
   return (
     <Card className="flex h-full min-h-[460px] flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-soft">
       <div className="relative h-48 shrink-0 bg-muted">
@@ -53,7 +56,7 @@ export function DestinationCard({ destination, detailsHref = "/planner" }: { des
             <span className="text-muted-foreground">{destination.bestMonths.slice(0, 2).join(" and ")}</span>
           </div>
           <Button asChild className="mt-4 w-full" variant="outline">
-            <Link href={detailsHref}>
+            <Link href={href}>
               View Details <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
