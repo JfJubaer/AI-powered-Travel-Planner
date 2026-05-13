@@ -44,6 +44,25 @@ export interface RecommendationResult {
   highlights: string[];
 }
 
+export interface SmartRecommendationInput {
+  budget: number;
+  mood: string;
+  weather: string;
+  travelType: string;
+}
+
+export interface SmartRecommendationResult {
+  destination: string;
+  country: string;
+  matchScore: number;
+  activities: string[];
+  estimatedBudget: number;
+  currency: string;
+  whyItMatches: string;
+  bestTimeToVisit: string;
+  highlights: string[];
+}
+
 export async function generateItinerary(
   input: ItineraryInput,
 ): Promise<ItineraryResult> {
@@ -111,6 +130,151 @@ export async function recommendDestinations(
     })
     .sort((a, b) => b.matchScore - a.matchScore)
     .slice(0, 4);
+}
+
+export async function generateSmartRecommendation(
+  input: SmartRecommendationInput,
+): Promise<SmartRecommendationResult> {
+  console.log("🤖 Generating smart recommendation for:", input);
+
+  // Try OpenAI first
+  try {
+    return await tryProviderSmartRecommendation(input);
+  } catch (error) {
+    console.log("⚠️ OpenAI failed, using local smart recommender");
+    return generateLocalSmartRecommendation(input);
+  }
+}
+
+async function tryProviderSmartRecommendation(
+  input: SmartRecommendationInput,
+): Promise<SmartRecommendationResult> {
+  try {
+    console.log("🤖 Calling OpenAI for smart recommendation...");
+
+    const requestPayload = {
+      model: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an expert travel advisor AI. Recommend ONE perfect destination based on the user's mood, weather preference, travel type, and budget. Respond with ONLY valid JSON, no markdown or extra text.",
+        },
+        {
+          role: "user",
+          content: `Recommend the SINGLE best destination for a traveler with:
+- Budget: $${input.budget}
+- Mood: ${input.mood}
+- Preferred Weather: ${input.weather}
+- Travel Type: ${input.travelType}
+
+Return ONLY valid JSON (no markdown, no code blocks):
+{
+  "destination": "City Name",
+  "country": "Country Name",
+  "matchScore": 95,
+  "activities": ["activity 1", "activity 2", "activity 3", "activity 4"],
+  "estimatedBudget": 2000,
+  "currency": "USD",
+  "whyItMatches": "Explain why this is perfect for their needs",
+  "bestTimeToVisit": "Month or season",
+  "highlights": ["highlight 1", "highlight 2", "highlight 3"]
+}`,
+        },
+      ],
+      temperature: 0.8,
+      response_format: { type: "json_object" },
+    };
+
+    const response = await withRetry(
+      async () => {
+        return await axios.post(
+          "https://api.openai.com/v1/chat/completions",
+          requestPayload,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            timeout: 25000,
+          },
+        );
+      },
+      3,
+      2000,
+    );
+
+    console.log("✅ Smart recommendation received from OpenAI");
+
+    const content = response.data?.choices?.[0]?.message?.content;
+    if (!content) {
+      throw new Error("Empty response from OpenAI");
+    }
+
+    const parsed = JSON.parse(content) as SmartRecommendationResult;
+    return parsed;
+  } catch (error) {
+    console.error("❌ OpenAI smart recommendation failed:", error);
+    throw error;
+  }
+}
+
+function generateLocalSmartRecommendation(
+  input: SmartRecommendationInput,
+): SmartRecommendationResult {
+  // Simple matching logic for local recommendations
+  const moodLower = input.mood.toLowerCase();
+  const weatherLower = input.weather.toLowerCase();
+  const travelTypeLower = input.travelType.toLowerCase();
+
+  let destination = fallbackDestinations[0];
+  let matchScore = 75;
+
+  // Simple heuristics for matching
+  if (moodLower.includes("adventure") || travelTypeLower.includes("active")) {
+    destination =
+      fallbackDestinations.find(
+        (d) => d.style.includes("Adventure") || d.style.includes("Outdoor"),
+      ) || destination;
+    matchScore = 85;
+  } else if (moodLower.includes("relax") || moodLower.includes("chill")) {
+    destination =
+      fallbackDestinations.find(
+        (d) => d.style.includes("Relaxation") || d.style.includes("Beach"),
+      ) || destination;
+    matchScore = 82;
+  } else if (
+    moodLower.includes("cultural") ||
+    travelTypeLower.includes("cultural")
+  ) {
+    destination =
+      fallbackDestinations.find(
+        (d) => d.style.includes("Culture") || d.style.includes("History"),
+      ) || destination;
+    matchScore = 80;
+  }
+
+  // Budget matching
+  const dailyBudget = input.budget / 7; // Assume 1 week trip
+  if (dailyBudget < 50) {
+    matchScore -= 10;
+  } else if (dailyBudget > 300) {
+    matchScore = Math.min(98, matchScore + 10);
+  }
+
+  const activities = destination.highlights.slice(0, 4);
+
+  return {
+    destination: destination.name,
+    country: destination.country,
+    matchScore: Math.min(98, matchScore),
+    activities,
+    estimatedBudget: input.budget,
+    currency: "USD",
+    whyItMatches: `${destination.name} perfectly matches your ${input.mood} mood and preference for ${input.weather} weather. As a ${input.travelType} traveler with a $${input.budget} budget, you'll find this destination ideal for your style of travel.`,
+    bestTimeToVisit: destination.bestMonths.join(", "),
+    highlights: destination.highlights,
+  };
 }
 
 async function tryProviderItinerary(

@@ -4,7 +4,7 @@ export const itinerarySchema = z.object({
   destination: z.string().min(2),
   durationDays: z.coerce.number().int().min(1).max(21),
   budget: z.coerce.number().min(200).max(100000),
-  style: z.string().min(2)
+  style: z.string().min(2),
 });
 
 export const recommendationSchema = z.object({
@@ -13,5 +13,12 @@ export const recommendationSchema = z.object({
   budget: z.coerce.number().min(200).max(100000),
   travelers: z.coerce.number().int().min(1).max(20),
   style: z.string().min(2),
-  interests: z.array(z.string()).default([])
+  interests: z.array(z.string()).default([]),
+});
+
+export const smartRecommendationSchema = z.object({
+  budget: z.coerce.number().min(200).max(100000),
+  mood: z.string().min(2).max(50),
+  weather: z.string().min(2).max(50),
+  travelType: z.string().min(2).max(50),
 });

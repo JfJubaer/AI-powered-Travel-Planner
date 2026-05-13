@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import {
   generateItinerary,
   recommendDestinations,
+  generateSmartRecommendation,
 } from "../services/aiService.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { HttpError } from "../utils/httpError.js";
@@ -29,5 +30,21 @@ export const createRecommendations = asyncHandler(
   async (req: Request, res: Response) => {
     const recommendations = await recommendDestinations(req.body);
     res.json({ recommendations });
+  },
+);
+
+export const createSmartRecommendation = asyncHandler(
+  async (req: Request, res: Response) => {
+    try {
+      const recommendation = await generateSmartRecommendation(req.body);
+      res.json(recommendation);
+    } catch (error) {
+      throw new HttpError(
+        503,
+        error instanceof Error
+          ? error.message
+          : "Unable to generate recommendation right now.",
+      );
+    }
   },
 );

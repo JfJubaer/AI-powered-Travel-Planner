@@ -2,12 +2,14 @@ import { Router } from "express";
 import {
   createItinerary,
   createRecommendations,
+  createSmartRecommendation,
 } from "../controllers/aiController.js";
 import { authenticate } from "../middlewares/authMiddleware.js";
 import { validate } from "../middlewares/validate.js";
 import {
   itinerarySchema,
   recommendationSchema,
+  smartRecommendationSchema,
 } from "../validators/aiValidator.js";
 
 export const aiRouter = Router();
