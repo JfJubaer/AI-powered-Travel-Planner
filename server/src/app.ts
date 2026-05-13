@@ -7,6 +7,7 @@ import { destinationRouter } from "./routes/destinationRoutes.js";
 import { tripRouter } from "./routes/tripRoutes.js";
 import { userRouter } from "./routes/userRoutes.js";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
+import morgan from "morgan";
 
 export function createApp() {
   const app = express();
@@ -18,6 +19,12 @@ export function createApp() {
     }),
   );
   app.use(express.json({ limit: "1mb" }));
+
+  if (process.env.NODE_ENV === "production") {
+    app.use(morgan("combined")); // Apache-style logs for production
+  } else {
+    app.use(morgan("dev")); // Color-coded concise logs for development
+  }
 
   app.get("/health", (_req, res) => {
     res.json({ status: "ok", service: "ai-travel-planner-api" });
