@@ -1,0 +1,8 @@
+
+> ai-travel-planner@1.0.0 dev:client
+> npm.cmd run dev --workspace client
+
+
+> @ai-travel-planner/client@1.0.0 dev
+> next dev
+

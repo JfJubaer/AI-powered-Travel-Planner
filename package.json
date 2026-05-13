@@ -1,0 +1,21 @@
+{
+  "name": "ai-travel-planner",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Production-quality AI-powered full-stack travel planner web application.",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm.cmd run dev --workspace client\" \"npm.cmd run dev --workspace server\"",
+    "dev:client": "npm.cmd run dev --workspace client",
+    "dev:server": "npm.cmd run dev --workspace server",
+    "build": "npm.cmd run build --workspace client && npm.cmd run build --workspace server",
+    "lint": "npm.cmd run lint --workspace client",
+    "typecheck": "npm.cmd run typecheck --workspace client && npm.cmd run typecheck --workspace server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

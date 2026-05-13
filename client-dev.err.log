@@ -1,0 +1,10 @@
+Error: spawn EPERM
+    at new Promise (<anonymous>) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'spawn'
+}
+npm ERR! Lifecycle script `dev` failed with error: 
+npm ERR! Error: command failed 
+npm ERR!   in workspace: @ai-travel-planner/client@1.0.0 
+npm ERR!   at location: C:\Users\Zubier\Desktop\Personal Project\Travel Planner App\client 
