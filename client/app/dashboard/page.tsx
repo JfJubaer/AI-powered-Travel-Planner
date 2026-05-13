@@ -1,156 +1,84 @@
 "use client";
 
-import type { ComponentType } from "react";
-import { useEffect, useState, useTransition } from "react";
-import { DestinationCard } from "@/components/destination-card";
-import { MetricCard } from "@/components/metric-card";
-import { StatusPill } from "@/components/status-pill";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getDashboard } from "@/lib/api";
-import type { DashboardMetric, DashboardTrip, Destination, Role } from "@/lib/types";
-import { BriefcaseBusiness, Loader2, ShieldCheck, UserRound } from "lucide-react";
+import { MapPin, TrendingUp, Zap, Users } from "lucide-react";
+import { DashboardLayout } from "@/components/dashboard-layout";
+import { OverviewCard } from "@/components/dashboard-cards";
+import { LineChartComponent, BarChartComponent } from "@/components/dashboard-charts";
 
-const roles: { value: Role; label: string; icon: ComponentType<{ className?: string }> }[] = [
-  { value: "traveler", label: "Traveler", icon: UserRound },
-  { value: "agency", label: "Agency", icon: BriefcaseBusiness },
-  { value: "admin", label: "Admin", icon: ShieldCheck }
+const mockTripData = [
+  { name: "Jan", value: 2 },
+  { name: "Feb", value: 3 },
+  { name: "Mar", value: 1 },
+  { name: "Apr", value: 4 },
+  { name: "May", value: 3 },
 ];
 
-export default function DashboardPage() {
-  const [role, setRole] = useState<Role>("traveler");
-  const [metrics, setMetrics] = useState<DashboardMetric[]>([]);
-  const [recentTrips, setRecentTrips] = useState<DashboardTrip[]>([]);
-  const [recommendations, setRecommendations] = useState<Destination[]>([]);
-  const [error, setError] = useState("");
-  const [isPending, startTransition] = useTransition();
+const mockSpendingData = [
+  { name: "Jan", value: 2400 },
+  { name: "Feb", value: 1398 },
+  { name: "Mar", value: 9800 },
+  { name: "Apr", value: 3908 },
+  { name: "May", value: 4800 },
+];
 
-  useEffect(() => {
-    setError("");
-    startTransition(async () => {
-      try {
-        const result = await getDashboard(role);
-        setMetrics(result.metrics);
-        setRecentTrips(result.recentTrips);
-        setRecommendations(result.recommendations);
-      } catch {
-        setError("Dashboard data is unavailable. Start the API server to load live metrics.");
-      }
-    });
-  }, [role]);
-
+export default function Dashboard() {
   return (
-    <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-        <div>
-          <StatusPill>Role-based dashboard</StatusPill>
-          <h1 className="mt-4 text-3xl font-black tracking-normal sm:text-4xl">Operate every travel workflow.</h1>
-          <p className="mt-3 max-w-2xl text-muted-foreground">
-            Switch roles to view the metrics, saved plans, and destination intelligence each user type needs.
-          </p>
+    <DashboardLayout role="traveler" userName="John Doe" userEmail="john@example.com">
+      <div className="space-y-8">
+        {/* Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <OverviewCard
+            title="Total Trips"
+            value="12"
+            description="Completed trips"
+            icon={MapPin}
+            trend={{ value: 20, isPositive: true }}
+          />
+          <OverviewCard
+            title="Destinations Saved"
+            value="28"
+            description="For future travel"
+            icon={TrendingUp}
+            trend={{ value: 5, isPositive: true }}
+          />
+          <OverviewCard
+            title="Total Spent"
+            value="$18,240"
+            description="This year"
+            icon={Zap}
+            trend={{ value: 12, isPositive: false }}
+          />
+          <OverviewCard
+            title="Friends"
+            value="45"
+            description="Travel companions"
+            icon={Users}
+            trend={{ value: 8, isPositive: true }}
+          />
         </div>
-        <div className="flex flex-wrap gap-2">
-          {roles.map((item) => (
-            <Button
-              key={item.value}
-              variant={role === item.value ? "default" : "outline"}
-              onClick={() => setRole(item.value)}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </Button>
-          ))}
+
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <LineChartComponent data={mockTripData} title="Trips Per Month" />
+          <BarChartComponent data={mockSpendingData} title="Monthly Spending" />
+        </div>
+
+        {/* Recent Activity */}
+        <div className="bg-card rounded-lg p-6 border border-border">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Recent Activity</h2>
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center justify-between pb-4 border-b border-border last:border-0">
+                <div>
+                  <p className="text-foreground font-medium">Trip to Paris</p>
+                  <p className="text-sm text-muted-foreground">Completed on March 15, 2024</p>
+                </div>
+                <span className="text-sm font-semibold text-green-600">Completed</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-
-      {error ? <p className="mb-6 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">{error}</p> : null}
-
-      {isPending && !metrics.length ? (
-        <Card>
-          <CardContent className="flex items-center justify-center gap-3 p-10 text-muted-foreground">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            Loading dashboard
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          <section className="grid gap-4 md:grid-cols-3">
-            {metrics.map((metric) => (
-              <MetricCard key={metric.label} label={metric.label} value={metric.value} trend={metric.trend} />
-            ))}
-          </section>
-
-          <section className="mt-6 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent trip plans</CardTitle>
-                <CardDescription>Plans generated from the selected role context.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {recentTrips.map((trip) => (
-                  <div key={`${trip.destination}-${trip.style}`} className="rounded-lg border border-border p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="font-bold">{trip.destination}</h3>
-                        <p className="mt-1 text-sm text-muted-foreground">{trip.style}</p>
-                      </div>
-                      <Badge className="bg-primary text-primary-foreground">{trip.durationDays} days</Badge>
-                    </div>
-                    <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-sm">
-                      <span className="text-muted-foreground">Estimated total</span>
-                      <span className="font-bold">${trip.estimatedTotal.toLocaleString()}</span>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Operating snapshot</CardTitle>
-                <CardDescription>Quality signals for planning confidence and destination fit.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <Snapshot label="AI confidence" value="High" />
-                  <Snapshot label="Budget variance" value="Low" />
-                  <Snapshot label="Coverage" value="Global" />
-                </div>
-                <div className="mt-5 rounded-lg bg-muted p-5">
-                  <h3 className="font-bold capitalize">{role} priority</h3>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {role === "traveler" && "Keep the next trip easy to compare, adjust, and book without losing budget clarity."}
-                    {role === "agency" && "Turn destination matches into polished client proposals with predictable margins and timing."}
-                    {role === "admin" && "Monitor planning quality, destination coverage, and generated trip volume across the platform."}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </section>
-
-          <section className="mt-6">
-            <div className="mb-4 flex items-center justify-between gap-4">
-              <h2 className="text-2xl font-bold">Destination signals</h2>
-              <Badge className="bg-accent text-accent-foreground">Curated</Badge>
-            </div>
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {recommendations.map((destination) => (
-                <DestinationCard key={`${destination.name}-${destination.country}`} destination={destination} />
-              ))}
-            </div>
-          </section>
-        </>
-      )}
-    </main>
-  );
-}
-
-function Snapshot({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border border-border bg-background p-4">
-      <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="mt-2 text-xl font-bold">{value}</p>
-    </div>
+    </DashboardLayout>
   );
 }
