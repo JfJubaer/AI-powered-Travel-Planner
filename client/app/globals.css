@@ -3,49 +3,49 @@
 @tailwind utilities;
 
 :root {
-  --background: 198 43% 98%;
-  --foreground: 202 47% 12%;
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
   --card: 0 0% 100%;
-  --card-foreground: 202 47% 12%;
+  --card-foreground: 222 47% 11%;
   --popover: 0 0% 100%;
-  --popover-foreground: 202 47% 12%;
-  --primary: 190 86% 28%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 217 91% 55%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 28 91% 58%;
-  --secondary-foreground: 202 47% 12%;
-  --accent: 46 91% 55%;
-  --accent-foreground: 202 47% 12%;
-  --muted: 198 28% 92%;
-  --muted-foreground: 202 18% 39%;
+  --secondary: 222 47% 14%;
+  --secondary-foreground: 210 40% 98%;
+  --accent: 174 72% 42%;
+  --accent-foreground: 210 40% 98%;
+  --muted: 214 32% 92%;
+  --muted-foreground: 220 14% 43%;
   --destructive: 0 72% 45%;
   --destructive-foreground: 0 0% 100%;
-  --border: 198 25% 84%;
-  --input: 198 25% 84%;
-  --ring: 190 86% 28%;
-  --radius: 0.5rem;
+  --border: 214 28% 86%;
+  --input: 214 28% 86%;
+  --ring: 217 91% 55%;
+  --radius: 0.75rem;
   --font-sans: "Aptos", "Segoe UI", "Helvetica Neue", sans-serif;
 }
 
 .dark {
-  --background: 202 47% 8%;
-  --foreground: 198 43% 96%;
-  --card: 202 39% 12%;
-  --card-foreground: 198 43% 96%;
-  --popover: 202 39% 12%;
-  --popover-foreground: 198 43% 96%;
-  --primary: 186 78% 42%;
-  --primary-foreground: 202 47% 8%;
-  --secondary: 28 86% 60%;
-  --secondary-foreground: 202 47% 8%;
-  --accent: 46 88% 58%;
-  --accent-foreground: 202 47% 8%;
-  --muted: 202 35% 17%;
-  --muted-foreground: 198 18% 72%;
+  --background: 222 47% 7%;
+  --foreground: 210 40% 96%;
+  --card: 222 42% 11%;
+  --card-foreground: 210 40% 96%;
+  --popover: 222 42% 11%;
+  --popover-foreground: 210 40% 96%;
+  --primary: 213 94% 68%;
+  --primary-foreground: 222 47% 7%;
+  --secondary: 217 33% 18%;
+  --secondary-foreground: 210 40% 96%;
+  --accent: 174 72% 48%;
+  --accent-foreground: 222 47% 7%;
+  --muted: 222 34% 16%;
+  --muted-foreground: 215 20% 72%;
   --destructive: 0 68% 48%;
   --destructive-foreground: 0 0% 100%;
-  --border: 202 30% 22%;
-  --input: 202 30% 22%;
-  --ring: 186 78% 42%;
+  --border: 220 28% 24%;
+  --input: 220 28% 24%;
+  --ring: 213 94% 68%;
 }
 
 * {
@@ -59,14 +59,22 @@ body {
 
 .surface-grid {
   background:
-    linear-gradient(rgba(13, 89, 104, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(13, 89, 104, 0.06) 1px, transparent 1px);
+    radial-gradient(circle at 20% 0%, rgba(37, 99, 235, 0.12), transparent 30%),
+    radial-gradient(circle at 85% 10%, rgba(20, 184, 166, 0.10), transparent 28%),
+    linear-gradient(rgba(37, 99, 235, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.055) 1px, transparent 1px);
   background-size: 34px 34px;
 }
 
 .dark .surface-grid {
   background:
-    linear-gradient(rgba(43, 202, 217, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(43, 202, 217, 0.08) 1px, transparent 1px);
+    radial-gradient(circle at 20% 0%, rgba(96, 165, 250, 0.12), transparent 30%),
+    radial-gradient(circle at 85% 10%, rgba(45, 212, 191, 0.10), transparent 28%),
+    linear-gradient(rgba(96, 165, 250, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96, 165, 250, 0.08) 1px, transparent 1px);
   background-size: 34px 34px;
+}
+
+.glass-surface {
+  @apply border border-white/50 bg-white/80 shadow-soft backdrop-blur-xl dark:border-white/10 dark:bg-card/80;
 }

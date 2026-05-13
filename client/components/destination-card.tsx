@@ -30,7 +30,7 @@ export function DestinationCard({ destination }: { destination: Destination }) {
             </p>
           </div>
           <div className="text-right text-sm font-semibold">
-            <p className="flex items-center gap-1 text-secondary">
+            <p className="flex items-center gap-1 text-primary">
               <Star className="h-4 w-4 fill-current" />
               {destination.rating}
             </p>

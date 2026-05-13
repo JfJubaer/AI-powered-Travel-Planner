@@ -49,7 +49,7 @@ const config: Config = {
         sans: ["var(--font-sans)"]
       },
       boxShadow: {
-        soft: "0 18px 60px rgba(11, 35, 51, 0.10)"
+        soft: "0 20px 70px rgba(15, 23, 42, 0.10)"
       }
     }
   },

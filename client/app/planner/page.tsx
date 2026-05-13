@@ -244,7 +244,7 @@ export default function PlannerPage() {
                     {itinerary.itinerary.map((day) => (
                       <div key={day.day} className="rounded-lg border border-border p-4">
                         <div className="flex items-center gap-3">
-                          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
+                          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground">
                             {day.day}
                           </span>
                           <h3 className="font-bold">{day.title}</h3>
@@ -258,7 +258,7 @@ export default function PlannerPage() {
                       </div>
                     ))}
                   </div>
-                  <div className="rounded-lg bg-secondary/15 p-4">
+                  <div className="rounded-lg bg-secondary/10 p-4 dark:bg-secondary/45">
                     <h3 className="font-bold">Booking guidance</h3>
                     <div className="mt-3 grid gap-2 text-sm text-muted-foreground">
                       {itinerary.bookingTips.map((tip) => (
@@ -292,7 +292,7 @@ export default function PlannerPage() {
                         <h3 className="font-bold">{destination.name}, {destination.country}</h3>
                         <p className="mt-2 text-sm leading-6 text-muted-foreground">{destination.why}</p>
                       </div>
-                      <span className="rounded-md bg-accent px-3 py-2 text-sm font-bold text-accent-foreground">{destination.matchScore}%</span>
+                      <span className="rounded-lg bg-accent px-3 py-2 text-sm font-bold text-accent-foreground">{destination.matchScore}%</span>
                     </div>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {destination.highlights.map((highlight) => (
