@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   BarChart3,
   LogOut,
@@ -15,6 +15,8 @@ import {
   Star,
   Zap,
 } from "lucide-react";
+import { useAuth } from "@/components/auth-provider";
+import { useToast } from "@/components/toast-provider";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -24,7 +26,10 @@ interface DashboardSidebarProps {
 
 export function DashboardSidebar({ role }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { logout } = useAuth();
+  const { toast } = useToast();
 
   const userNavItems = [
     { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -43,6 +48,17 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
   ];
 
   const navItems = role === "admin" ? adminNavItems : userNavItems;
+
+  function handleLogout() {
+    logout();
+    setIsMobileOpen(false);
+    toast({
+      variant: "info",
+      title: "Signed out",
+      description: "Your dashboard session has ended."
+    });
+    router.push("/");
+  }
 
   return (
     <>
@@ -92,7 +108,7 @@ export function DashboardSidebar({ role }: DashboardSidebarProps) {
           <Button
             variant="outline"
             className="w-full justify-start gap-2"
-            onClick={() => console.log("Logout")}
+            onClick={handleLogout}
           >
             <LogOut size={20} />
             Logout

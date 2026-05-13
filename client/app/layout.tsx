@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthProvider } from "@/components/auth-provider";
 import { SiteNavbar } from "@/components/site-navbar";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ToastProvider } from "@/components/toast-provider";
 
 export const metadata: Metadata = {
   title: "AI Travel Planner",
@@ -13,10 +15,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" suppressHydrationWarning>
       <body>
         <ThemeProvider>
-          <div className="min-h-screen surface-grid">
-            <SiteNavbar />
-            {children}
-          </div>
+          <ToastProvider>
+            <AuthProvider>
+              <div className="min-h-screen surface-grid">
+                <SiteNavbar />
+                {children}
+              </div>
+            </AuthProvider>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

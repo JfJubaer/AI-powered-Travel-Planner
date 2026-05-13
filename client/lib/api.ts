@@ -8,11 +8,58 @@ import type {
   RecommendationResult,
   Role
 } from "./types";
+import type { AuthUser } from "./auth";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api",
   timeout: 25000
 });
+
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface RegisterPayload extends LoginPayload {
+  name: string;
+  role?: "traveler" | "admin";
+}
+
+interface AuthResponse {
+  user: AuthUser;
+  token: string;
+}
+
+export function setApiAuthToken(token?: string) {
+  if (token) {
+    api.defaults.headers.common.Authorization = `Bearer ${token}`;
+    return;
+  }
+
+  delete api.defaults.headers.common.Authorization;
+}
+
+export function getApiErrorMessage(error: unknown, fallbackMessage = "Something went wrong.") {
+  if (axios.isAxiosError<{ message?: string }>(error)) {
+    return error.response?.data?.message ?? error.message ?? fallbackMessage;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return fallbackMessage;
+}
+
+export async function loginUser(payload: LoginPayload) {
+  const { data } = await api.post<AuthResponse>("/auth/login", payload);
+  return data;
+}
+
+export async function registerUser(payload: RegisterPayload) {
+  const { data } = await api.post<AuthResponse>("/auth/register", payload);
+  return data;
+}
 
 export interface ItineraryPayload {
   destination: string;

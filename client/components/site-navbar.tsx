@@ -4,8 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ChevronDown, Compass, LayoutDashboard, LogOut, Menu, UserRound, X } from "lucide-react";
+import { useAuth } from "@/components/auth-provider";
+import { useToast } from "@/components/toast-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { getDashboardRoute, getRoleLabel } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -19,23 +22,27 @@ const navItems = [
 export function SiteNavbar() {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { isAuthenticated, logout, user } = useAuth();
+  const { toast } = useToast();
 
   function closeMenus() {
     setIsMobileOpen(false);
     setIsProfileOpen(false);
   }
 
-  function login() {
-    setIsLoggedIn(true);
+  function handleLogout() {
+    logout();
+    toast({
+      variant: "info",
+      title: "Signed out",
+      description: "Your session has been cleared."
+    });
     closeMenus();
   }
 
-  function logout() {
-    setIsLoggedIn(false);
-    closeMenus();
-  }
+  const dashboardHref = user ? getDashboardRoute(user.role) : "/dashboard";
+  const roleLabel = user ? getRoleLabel(user.role) : "User";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/90 shadow-sm backdrop-blur-xl">
@@ -68,10 +75,10 @@ export function SiteNavbar() {
 
         <div className="hidden items-center gap-2 lg:flex">
           <ThemeToggle />
-          {isLoggedIn ? (
+          {isAuthenticated && user ? (
             <>
               <Button asChild variant="outline">
-                <Link href="/dashboard">
+                <Link href={dashboardHref}>
                   <LayoutDashboard className="h-4 w-4" />
                   Dashboard
                 </Link>
@@ -84,17 +91,17 @@ export function SiteNavbar() {
                   aria-haspopup="menu"
                 >
                   <UserRound className="h-4 w-4" />
-                  Zubier
+                  {user.name.split(" ")[0]}
                   <ChevronDown className={cn("h-4 w-4 transition-transform", isProfileOpen && "rotate-180")} />
                 </Button>
                 {isProfileOpen ? (
                   <div className="absolute right-0 mt-2 w-56 rounded-lg border border-border bg-card p-2 text-card-foreground shadow-soft">
                     <div className="border-b border-border px-3 py-2">
-                      <p className="text-sm font-bold">Zubier Ahmed</p>
-                      <p className="text-xs text-muted-foreground">Traveler workspace</p>
+                      <p className="text-sm font-bold">{user.name}</p>
+                      <p className="text-xs text-muted-foreground">{roleLabel} workspace</p>
                     </div>
                     <Link
-                      href="/dashboard"
+                      href={dashboardHref}
                       onClick={closeMenus}
                       className="mt-2 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors hover:bg-muted"
                     >
@@ -102,7 +109,7 @@ export function SiteNavbar() {
                       Dashboard
                     </Link>
                     <button
-                      onClick={logout}
+                      onClick={handleLogout}
                       className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-destructive transition-colors hover:bg-destructive/10"
                     >
                       <LogOut className="h-4 w-4" />
@@ -114,10 +121,12 @@ export function SiteNavbar() {
             </>
           ) : (
             <>
-              <Button variant="ghost" onClick={login}>
-                Login
+              <Button asChild variant="ghost">
+                <Link href="/login">Login</Link>
               </Button>
-              <Button onClick={login}>Register</Button>
+              <Button asChild>
+                <Link href="/register">Register</Link>
+              </Button>
             </>
           )}
         </div>
@@ -159,10 +168,10 @@ export function SiteNavbar() {
           </nav>
 
           <div className="mx-auto mt-4 grid max-w-7xl gap-2 border-t border-border pt-4">
-            {isLoggedIn ? (
+            {isAuthenticated && user ? (
               <>
                 <Button asChild variant="outline">
-                  <Link href="/dashboard" onClick={closeMenus}>
+                  <Link href={dashboardHref} onClick={closeMenus}>
                     <LayoutDashboard className="h-4 w-4" />
                     Dashboard
                   </Link>
@@ -174,9 +183,10 @@ export function SiteNavbar() {
                 </Button>
                 {isProfileOpen ? (
                   <div className="rounded-lg border border-border bg-card p-2 shadow-sm">
-                    <p className="px-3 py-2 text-sm font-bold">Zubier Ahmed</p>
+                    <p className="px-3 py-2 text-sm font-bold">{user.name}</p>
+                    <p className="px-3 pb-2 text-xs text-muted-foreground">{roleLabel} workspace</p>
                     <button
-                      onClick={logout}
+                      onClick={handleLogout}
                       className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-destructive transition-colors hover:bg-destructive/10"
                     >
                       <LogOut className="h-4 w-4" />
@@ -187,10 +197,16 @@ export function SiteNavbar() {
               </>
             ) : (
               <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline" onClick={login}>
-                  Login
+                <Button asChild variant="outline">
+                  <Link href="/login" onClick={closeMenus}>
+                    Login
+                  </Link>
                 </Button>
-                <Button onClick={login}>Register</Button>
+                <Button asChild>
+                  <Link href="/register" onClick={closeMenus}>
+                    Register
+                  </Link>
+                </Button>
               </div>
             )}
           </div>

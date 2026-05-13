@@ -1,7 +1,11 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ChevronDown, LogOut, User } from "lucide-react";
+import { useAuth } from "@/components/auth-provider";
+import { useToast } from "@/components/toast-provider";
 import { cn } from "@/lib/utils";
 
 interface DashboardHeaderProps {
@@ -12,6 +16,20 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ userName, userEmail, userAvatar }: DashboardHeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const { logout } = useAuth();
+  const { toast } = useToast();
+
+  function handleLogout() {
+    logout();
+    setIsOpen(false);
+    toast({
+      variant: "info",
+      title: "Signed out",
+      description: "You have been returned to the public site."
+    });
+    router.push("/");
+  }
 
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-background border-b border-border">
@@ -38,11 +56,14 @@ export function DashboardHeader({ userName, userEmail, userAvatar }: DashboardHe
               <p className="text-xs text-muted-foreground">{userEmail}</p>
             </div>
             <div className="p-2 space-y-1">
-              <button className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground hover:bg-muted rounded-md transition-colors">
+              <Link href="/dashboard/profile" className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground hover:bg-muted rounded-md transition-colors">
                 <User size={16} />
                 Profile
-              </button>
-              <button className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 rounded-md transition-colors">
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 rounded-md transition-colors"
+              >
                 <LogOut size={16} />
                 Logout
               </button>
