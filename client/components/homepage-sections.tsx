@@ -14,7 +14,6 @@ import {
   Globe2,
   HeartHandshake,
   Mail,
-  MapPinned,
   Mountain,
   Plane,
   ShieldCheck,
@@ -22,20 +21,73 @@ import {
   Star,
   Utensils
 } from "lucide-react";
+import { DestinationCard, DestinationCardSkeleton } from "@/components/destination-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import type { Destination } from "@/lib/types";
 
 const sectionClass = "mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8";
 const hoverCard = "transition-all duration-300 hover:-translate-y-1 hover:shadow-soft";
 
-const popularDestinations = [
-  { city: "Kyoto", country: "Japan", score: "98%", price: "$185/day", vibe: "Culture and food", accent: "from-blue-500/20 to-teal-500/20" },
-  { city: "Lisbon", country: "Portugal", score: "94%", price: "$145/day", vibe: "Coast and cafes", accent: "from-sky-500/20 to-blue-600/20" },
-  { city: "Queenstown", country: "New Zealand", score: "96%", price: "$260/day", vibe: "Adventure", accent: "from-teal-500/20 to-slate-900/20" },
-  { city: "Marrakesh", country: "Morocco", score: "91%", price: "$92/day", vibe: "Markets and design", accent: "from-blue-400/20 to-teal-400/20" }
+const popularDestinations: Destination[] = [
+  {
+    name: "Kyoto",
+    country: "Japan",
+    region: "Asia",
+    style: ["culture", "food", "temples"],
+    budgetLevel: "balanced",
+    bestMonths: ["March", "November"],
+    averageDailyCost: 185,
+    imageUrl: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&q=80",
+    highlights: ["Gion", "Fushimi Inari", "Arashiyama"],
+    rating: 4.9,
+    safetyScore: 97,
+    summary: "A refined city for temple walks, seasonal food, quiet lanes, and deeply intentional travel days."
+  },
+  {
+    name: "Lisbon",
+    country: "Portugal",
+    region: "Europe",
+    style: ["coast", "food", "city"],
+    budgetLevel: "balanced",
+    bestMonths: ["May", "September"],
+    averageDailyCost: 145,
+    imageUrl: "https://images.unsplash.com/photo-1504541891213-1b1dfdadb739?auto=format&fit=crop&w=1200&q=80",
+    highlights: ["Alfama", "Belem", "Sintra"],
+    rating: 4.8,
+    safetyScore: 91,
+    summary: "A bright Atlantic capital with tiled streets, strong food culture, and easy coastal day trips."
+  },
+  {
+    name: "Queenstown",
+    country: "New Zealand",
+    region: "Oceania",
+    style: ["adventure", "nature", "premium"],
+    budgetLevel: "premium",
+    bestMonths: ["February", "December"],
+    averageDailyCost: 260,
+    imageUrl: "https://images.unsplash.com/photo-1589871973318-9ca1258faa5d?auto=format&fit=crop&w=1200&q=80",
+    highlights: ["Lake Wakatipu", "Milford Sound", "Gibbston Valley"],
+    rating: 4.9,
+    safetyScore: 96,
+    summary: "A polished alpine base for cinematic landscapes, outdoor adrenaline, and vineyard afternoons."
+  },
+  {
+    name: "Marrakesh",
+    country: "Morocco",
+    region: "Africa",
+    style: ["markets", "culture", "value"],
+    budgetLevel: "value",
+    bestMonths: ["March", "October"],
+    averageDailyCost: 92,
+    imageUrl: "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80",
+    highlights: ["Medina", "Majorelle Garden", "Atlas Mountains"],
+    rating: 4.5,
+    safetyScore: 84,
+    summary: "A sensory, design-rich city for riads, markets, rooftop dinners, and desert-side extensions."
+  }
 ];
 
 const categories = [
@@ -113,26 +165,15 @@ export function HomepageSections() {
       <section className={sectionClass}>
         <SectionHeading eyebrow="Popular destinations" title="AI-ranked places travelers are planning now." />
         {isLoading ? (
-          <SkeletonGrid count={4} />
+          <div className="mt-8 grid items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <DestinationCardSkeleton key={index} />
+            ))}
+          </div>
         ) : (
-          <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-8 grid items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-4">
             {popularDestinations.map((destination) => (
-              <Card key={destination.city} className={cn("overflow-hidden", hoverCard)}>
-                <CardContent className="p-0">
-                  <div className={cn("h-32 bg-gradient-to-br", destination.accent)} />
-                  <div className="p-5">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="text-xl font-bold">{destination.city}</h3>
-                        <p className="mt-1 text-sm text-muted-foreground">{destination.country}</p>
-                      </div>
-                      <Badge className="bg-accent text-accent-foreground">{destination.score}</Badge>
-                    </div>
-                    <p className="mt-4 text-sm font-semibold">{destination.vibe}</p>
-                    <p className="mt-2 text-sm text-muted-foreground">{destination.price}</p>
-                  </div>
-                </CardContent>
-              </Card>
+              <DestinationCard key={`${destination.name}-${destination.country}`} destination={destination} detailsHref="/explore" />
             ))}
           </div>
         )}
@@ -324,7 +365,7 @@ export function HomepageSections() {
           <FooterLinks title="Company" links={["About", "Blog", "Contact"]} />
         </div>
         <div className="border-t border-white/10 px-4 py-5 text-center text-sm opacity-75">
-          © 2026 AI Travel Planner. Built for smarter trips.
+          (c) 2026 AI Travel Planner. Built for smarter trips.
         </div>
       </footer>
     </>

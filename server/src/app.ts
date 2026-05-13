@@ -1,8 +1,12 @@
 import cors from "cors";
 import express from "express";
-import { aiRouter } from "./routes/ai.js";
-import { dashboardRouter } from "./routes/dashboard.js";
-import { destinationRouter } from "./routes/destinations.js";
+import { aiRouter } from "./routes/aiRoutes.js";
+import { authRouter } from "./routes/authRoutes.js";
+import { dashboardRouter } from "./routes/dashboardRoutes.js";
+import { destinationRouter } from "./routes/destinationRoutes.js";
+import { tripRouter } from "./routes/tripRoutes.js";
+import { userRouter } from "./routes/userRoutes.js";
+import { errorHandler, notFound } from "./middlewares/errorMiddleware.js";
 
 export function createApp() {
   const app = express();
@@ -19,13 +23,15 @@ export function createApp() {
     res.json({ status: "ok", service: "ai-travel-planner-api" });
   });
 
+  app.use("/api/auth", authRouter);
   app.use("/api/ai", aiRouter);
   app.use("/api/dashboard", dashboardRouter);
   app.use("/api/destinations", destinationRouter);
+  app.use("/api/trips", tripRouter);
+  app.use("/api/users", userRouter);
 
-  app.use((_req, res) => {
-    res.status(404).json({ message: "Route not found" });
-  });
+  app.use(notFound);
+  app.use(errorHandler);
 
   return app;
 }

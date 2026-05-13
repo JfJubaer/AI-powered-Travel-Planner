@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { DestinationCard } from "@/components/destination-card";
+import { DestinationCard, DestinationCardSkeleton } from "@/components/destination-card";
 import { StatusPill } from "@/components/status-pill";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -85,10 +85,12 @@ export default function ExplorePage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {destinations.map((destination) => (
-          <DestinationCard key={`${destination.name}-${destination.country}`} destination={destination} />
-        ))}
+      <div className="grid items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        {isPending && !destinations.length
+          ? Array.from({ length: 8 }).map((_, index) => <DestinationCardSkeleton key={index} />)
+          : destinations.map((destination) => (
+              <DestinationCard key={`${destination.name}-${destination.country}`} destination={destination} />
+            ))}
       </div>
 
       {!isPending && !destinations.length ? (

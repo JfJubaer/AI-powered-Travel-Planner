@@ -12,6 +12,7 @@ export interface TripDay {
 }
 
 export interface TripDocument {
+  user?: mongoose.Types.ObjectId;
   destination: string;
   durationDays: number;
   travelers: number;
@@ -37,6 +38,7 @@ const tripDaySchema = new Schema<TripDay>(
 
 const tripSchema = new Schema<TripDocument>(
   {
+    user: { type: Schema.Types.ObjectId, ref: "User" },
     destination: { type: String, required: true },
     durationDays: { type: Number, required: true },
     travelers: { type: Number, required: true },

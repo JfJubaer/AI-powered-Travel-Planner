@@ -1,21 +1,22 @@
-import { Router } from "express";
+import type { Request, Response } from "express";
 import { fallbackDestinations } from "../data/destinations.js";
 import { isDatabaseConnected } from "../lib/database.js";
 import { Trip } from "../models/Trip.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { HttpError } from "../utils/httpError.js";
 
-export const dashboardRouter = Router();
-
-dashboardRouter.get("/:role", async (req, res) => {
+export const getDashboardByRole = asyncHandler(async (req: Request, res: Response) => {
   const role = req.params.role as "traveler" | "agency" | "admin";
   const validRoles = ["traveler", "agency", "admin"];
 
   if (!validRoles.includes(role)) {
-    return res.status(400).json({ message: "Unsupported role" });
+    throw new HttpError(400, "Unsupported role");
   }
 
-  const tripCount = isDatabaseConnected() ? await Trip.countDocuments(role === "admin" ? {} : { createdByRole: role }) : 24;
+  const tripFilter = role === "admin" ? {} : { createdByRole: role };
+  const tripCount = isDatabaseConnected() ? await Trip.countDocuments(tripFilter) : 24;
   const recentTrips = isDatabaseConnected()
-    ? await Trip.find(role === "admin" ? {} : { createdByRole: role }).sort({ createdAt: -1 }).limit(4).lean()
+    ? await Trip.find(tripFilter).sort({ createdAt: -1 }).limit(4).lean()
     : [];
 
   const roleMetrics = {
