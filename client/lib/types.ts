@@ -27,6 +27,7 @@ export interface RecommendationResult {
 }
 
 export interface Destination {
+  _id?: string;
   name: string;
   country: string;
   region: string;
@@ -41,45 +42,8 @@ export interface Destination {
   summary: string;
 }
 
-export interface DestinationGalleryImage {
-  src: string;
-  alt: string;
-}
-
-export interface DestinationBudgetDetails {
-  stay: string;
-  food: string;
-  transport: string;
-  experiences: string;
-  note: string;
-}
-
-export interface DestinationSeasonNote {
-  label: string;
-  months: string;
-  reason: string;
-}
-
-export interface DestinationReview {
-  author: string;
-  rating: number;
-  date: string;
-  tripType: string;
-  comment: string;
-}
-
-export interface DestinationTravelTip {
-  title: string;
-  description: string;
-}
-
 export interface DestinationDetails {
   destination: Destination;
-  galleryImages: DestinationGalleryImage[];
-  budgetDetails: DestinationBudgetDetails;
-  bestTimeToVisit: DestinationSeasonNote[];
-  reviews: DestinationReview[];
-  travelTips: DestinationTravelTip[];
   relatedDestinations: Destination[];
 }
 

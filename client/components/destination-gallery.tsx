@@ -3,7 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import type { DestinationGalleryImage } from "@/lib/types";
+
+interface DestinationGalleryImage {
+  src: string;
+  alt: string;
+}
 
 export function DestinationGallery({
   images,

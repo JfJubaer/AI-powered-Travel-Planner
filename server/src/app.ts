@@ -12,6 +12,8 @@ import morgan from "morgan";
 export function createApp() {
   const app = express();
 
+  app.use(morgan("dev"));
+
   app.use(
     cors({
       origin: process.env.CLIENT_URL ?? "http://localhost:3000",
@@ -19,16 +21,6 @@ export function createApp() {
     }),
   );
   app.use(express.json({ limit: "1mb" }));
-
-  if (process.env.NODE_ENV === "production") {
-    app.use(morgan("combined")); // Apache-style logs for production
-  } else {
-    app.use(morgan("dev")); // Color-coded concise logs for development
-  }
-
-  app.get("/health", (_req, res) => {
-    res.json({ status: "ok", service: "ai-travel-planner-api" });
-  });
 
   app.use("/api/auth", authRouter);
   app.use("/api/ai", aiRouter);

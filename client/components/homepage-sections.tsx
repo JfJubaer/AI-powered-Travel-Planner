@@ -26,69 +26,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { getDestinations } from "@/lib/api";
 import type { Destination } from "@/lib/types";
 
 const sectionClass = "mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8";
 const hoverCard = "transition-all duration-300 hover:-translate-y-1 hover:shadow-soft";
-
-const popularDestinations: Destination[] = [
-  {
-    name: "Kyoto",
-    country: "Japan",
-    region: "Asia",
-    style: ["culture", "food", "temples"],
-    budgetLevel: "balanced",
-    bestMonths: ["March", "November"],
-    averageDailyCost: 185,
-    imageUrl: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1200&q=80",
-    highlights: ["Gion", "Fushimi Inari", "Arashiyama"],
-    rating: 4.9,
-    safetyScore: 97,
-    summary: "A refined city for temple walks, seasonal food, quiet lanes, and deeply intentional travel days."
-  },
-  {
-    name: "Lisbon",
-    country: "Portugal",
-    region: "Europe",
-    style: ["coast", "food", "city"],
-    budgetLevel: "balanced",
-    bestMonths: ["May", "September"],
-    averageDailyCost: 145,
-    imageUrl: "https://images.unsplash.com/photo-1504541891213-1b1dfdadb739?auto=format&fit=crop&w=1200&q=80",
-    highlights: ["Alfama", "Belem", "Sintra"],
-    rating: 4.8,
-    safetyScore: 91,
-    summary: "A bright Atlantic capital with tiled streets, strong food culture, and easy coastal day trips."
-  },
-  {
-    name: "Queenstown",
-    country: "New Zealand",
-    region: "Oceania",
-    style: ["adventure", "nature", "premium"],
-    budgetLevel: "premium",
-    bestMonths: ["February", "December"],
-    averageDailyCost: 260,
-    imageUrl: "https://images.unsplash.com/photo-1589871973318-9ca1258faa5d?auto=format&fit=crop&w=1200&q=80",
-    highlights: ["Lake Wakatipu", "Milford Sound", "Gibbston Valley"],
-    rating: 4.9,
-    safetyScore: 96,
-    summary: "A polished alpine base for cinematic landscapes, outdoor adrenaline, and vineyard afternoons."
-  },
-  {
-    name: "Marrakesh",
-    country: "Morocco",
-    region: "Africa",
-    style: ["markets", "culture", "value"],
-    budgetLevel: "value",
-    bestMonths: ["March", "October"],
-    averageDailyCost: 92,
-    imageUrl: "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80",
-    highlights: ["Medina", "Majorelle Garden", "Atlas Mountains"],
-    rating: 4.5,
-    safetyScore: 84,
-    summary: "A sensory, design-rich city for riads, markets, rooftop dinners, and desert-side extensions."
-  }
-];
 
 const categories = [
   { title: "Beach escapes", icon: Plane, trips: "48 trips" },
@@ -154,10 +96,49 @@ const faqs = [
 
 export function HomepageSections() {
   const [isLoading, setIsLoading] = useState(true);
+  const [popularDestinations, setPopularDestinations] = useState<Destination[]>([]);
+  const [destinationError, setDestinationError] = useState("");
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setIsLoading(false), 650);
-    return () => window.clearTimeout(timer);
+    let isActive = true;
+
+    const run = async () => {
+      setIsLoading(true);
+      setDestinationError("");
+
+      try {
+        const data = await getDestinations({
+          sortBy: "popularity",
+          limit: 4,
+          page: 1
+        });
+
+        if (!isActive) {
+          return;
+        }
+
+        setPopularDestinations(data.destinations);
+      } catch {
+        if (!isActive) {
+          return;
+        }
+
+        setDestinationError("Unable to load featured destinations right now.");
+        setPopularDestinations([]);
+      } finally {
+        if (!isActive) {
+          return;
+        }
+
+        setIsLoading(false);
+      }
+    };
+
+    run();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   return (
@@ -170,12 +151,23 @@ export function HomepageSections() {
               <DestinationCardSkeleton key={index} />
             ))}
           </div>
-        ) : (
+        ) : destinationError ? (
+          <Card className="mt-8 border-dashed">
+            <CardContent className="p-6 text-sm text-muted-foreground">{destinationError}</CardContent>
+          </Card>
+        ) : popularDestinations.length > 0 ? (
           <div className="mt-8 grid items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-4">
             {popularDestinations.map((destination) => (
-              <DestinationCard key={`${destination.name}-${destination.country}`} destination={destination} />
+              <DestinationCard
+                key={destination._id ?? `${destination.name}-${destination.country}`}
+                destination={destination}
+              />
             ))}
           </div>
+        ) : (
+          <Card className="mt-8 border-dashed">
+            <CardContent className="p-6 text-sm text-muted-foreground">No featured destinations are available yet.</CardContent>
+          </Card>
         )}
       </section>
 

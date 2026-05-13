@@ -14,13 +14,23 @@ export function validate(schemaMap: SchemaMap) {
     }
 
     if (schemaMap.query) {
-      req.query = schemaMap.query.parse(req.query) as Request["query"];
+      syncRequestObject(req.query, schemaMap.query.parse(req.query));
     }
 
     if (schemaMap.params) {
-      req.params = schemaMap.params.parse(req.params) as Request["params"];
+      syncRequestObject(req.params, schemaMap.params.parse(req.params));
     }
 
     next();
   };
+}
+
+function syncRequestObject(target: Record<string, unknown>, parsedValue: unknown) {
+  for (const key of Object.keys(target)) {
+    delete target[key];
+  }
+
+  if (parsedValue && typeof parsedValue === "object") {
+    Object.assign(target, parsedValue);
+  }
 }

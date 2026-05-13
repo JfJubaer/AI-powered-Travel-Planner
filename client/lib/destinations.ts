@@ -9,6 +9,6 @@ export function getDestinationSlug(name: string) {
     .replace(/\s+/g, "-");
 }
 
-export function getDestinationHref(destination: Pick<Destination, "name">) {
-  return `/explore/${getDestinationSlug(destination.name)}`;
+export function getDestinationHref(destination: Pick<Destination, "name" | "_id">) {
+  return destination._id ? `/explore/${destination._id}` : "/explore";
 }

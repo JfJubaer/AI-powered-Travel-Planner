@@ -11,7 +11,7 @@ export const destinationQuerySchema = z.object({
 });
 
 export const destinationIdParamSchema = z.object({
-  id: z.string().min(1)
+  id: z.string().regex(/^[a-f\d]{24}$/i, "Invalid destination id")
 });
 
 export const destinationCreateSchema = z.object({
