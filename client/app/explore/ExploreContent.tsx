@@ -15,6 +15,7 @@ import { Select } from "@/components/ui/select";
 import { getDestinations } from "@/lib/api";
 import type { Destination } from "@/lib/types";
 import { ChevronLeft, ChevronRight, Loader2, Search } from "lucide-react";
+import { Suspense } from "react";
 
 interface ExploreFilters {
   search: string;
