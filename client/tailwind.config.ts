@@ -50,6 +50,16 @@ const config: Config = {
       },
       boxShadow: {
         soft: "0 20px 70px rgba(15, 23, 42, 0.10)"
+      },
+      keyframes: {
+        gradientShift: {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" }
+        },
+        floatCard: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-14px)" }
+        }
       }
     }
   },
