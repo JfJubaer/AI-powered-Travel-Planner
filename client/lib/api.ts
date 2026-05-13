@@ -44,11 +44,30 @@ export async function createRecommendations(payload: RecommendationPayload) {
   return data.recommendations;
 }
 
-export async function getDestinations(filters?: { search?: string; style?: string; budget?: string }) {
-  const { data } = await api.get<{ destinations: Destination[] }>("/destinations", {
+export interface DestinationFilters {
+  search?: string;
+  country?: string;
+  style?: string;
+  budget?: string;
+  sortBy?: "rating" | "popularity";
+  page?: number;
+  limit?: number;
+}
+
+export interface DestinationListResponse {
+  destinations: Destination[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  availableCountries: string[];
+}
+
+export async function getDestinations(filters?: DestinationFilters) {
+  const { data } = await api.get<DestinationListResponse>("/destinations", {
     params: filters
   });
-  return data.destinations;
+  return data;
 }
 
 export async function getDashboard(role: Role) {

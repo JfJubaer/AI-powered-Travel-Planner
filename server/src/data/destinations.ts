@@ -1,6 +1,6 @@
-import type { DestinationDocument } from "../models/Destination.js";
+import type { DestinationRecord } from "../models/Destination.js";
 
-export const fallbackDestinations: DestinationDocument[] = [
+export const fallbackDestinations: DestinationRecord[] = [
   {
     name: "Kyoto",
     country: "Japan",

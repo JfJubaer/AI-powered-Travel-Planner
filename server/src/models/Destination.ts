@@ -2,60 +2,92 @@ import mongoose from "mongoose";
 
 const { Schema, model, models } = mongoose;
 
-export interface DestinationDocument extends mongoose.Document {
-  title: string;
+export interface DestinationRecord {
+  name: string;
   country: string;
-  description: string;
-  images: string[];
-  budget: "budget" | "moderate" | "luxury";
+  region: string;
+  style: string[];
+  budgetLevel: "value" | "balanced" | "premium";
+  bestMonths: string[];
+  averageDailyCost: number;
+  imageUrl: string;
+  highlights: string[];
   rating: number;
-  category: string[];
-  region?: string;
-  highlights?: string[];
-  averageDailyCost?: number;
-  safetyScore?: number;
-  bestMonths?: string[];
+  safetyScore: number;
+  summary: string;
+}
+
+export interface DestinationDocument extends mongoose.Document, DestinationRecord {
   createdAt: Date;
   updatedAt: Date;
 }
 
 const destinationSchema = new Schema<DestinationDocument>(
   {
-    title: {
+    name: {
       type: String,
-      required: [true, "Destination title is required"],
+      required: [true, "Destination name is required"],
       trim: true,
-      minlength: [2, "Title must be at least 2 characters"],
-      maxlength: [200, "Title must not exceed 200 characters"],
+      minlength: [2, "Name must be at least 2 characters"],
+      maxlength: [120, "Name must not exceed 120 characters"],
     },
     country: {
       type: String,
       required: [true, "Country is required"],
       trim: true,
     },
-    description: {
+    region: {
       type: String,
-      required: [true, "Description is required"],
-      minlength: [10, "Description must be at least 10 characters"],
-      maxlength: [5000, "Description must not exceed 5000 characters"],
+      required: [true, "Region is required"],
+      trim: true,
     },
-    images: {
+    style: {
       type: [String],
-      required: [true, "At least one image is required"],
+      required: [true, "At least one travel style is required"],
       validate: {
-        validator: function (images: string[]) {
-          return images.length > 0;
+        validator(styles: string[]) {
+          return styles.length > 0;
         },
-        message: "At least one image URL is required",
+        message: "At least one travel style is required",
       },
     },
-    budget: {
+    budgetLevel: {
       type: String,
       enum: {
-        values: ["budget", "moderate", "luxury"],
-        message: "Budget must be budget, moderate, or luxury",
+        values: ["value", "balanced", "premium"],
+        message: "Budget level must be value, balanced, or premium",
       },
-      required: [true, "Budget category is required"],
+      required: [true, "Budget level is required"],
+    },
+    bestMonths: {
+      type: [String],
+      required: [true, "At least one best month is required"],
+      validate: {
+        validator(months: string[]) {
+          return months.length > 0;
+        },
+        message: "At least one best month is required",
+      },
+    },
+    averageDailyCost: {
+      type: Number,
+      required: [true, "Average daily cost is required"],
+      min: [0, "Cost cannot be negative"],
+    },
+    imageUrl: {
+      type: String,
+      required: [true, "Image URL is required"],
+      trim: true,
+    },
+    highlights: {
+      type: [String],
+      required: [true, "At least one highlight is required"],
+      validate: {
+        validator(highlights: string[]) {
+          return highlights.length > 0;
+        },
+        message: "At least one highlight is required",
+      },
     },
     rating: {
       type: Number,
@@ -64,43 +96,17 @@ const destinationSchema = new Schema<DestinationDocument>(
       max: [5, "Rating must not exceed 5"],
       default: 0,
     },
-    category: {
-      type: [String],
-      required: [true, "At least one category is required"],
-      enum: {
-        values: [
-          "beach",
-          "mountain",
-          "city",
-          "culture",
-          "adventure",
-          "relaxation",
-          "wildlife",
-          "history",
-        ],
-        message: "Invalid category",
-      },
-    },
-    region: {
-      type: String,
-      trim: true,
-    },
-    highlights: {
-      type: [String],
-      default: [],
-    },
-    averageDailyCost: {
-      type: Number,
-      min: [0, "Cost cannot be negative"],
-    },
     safetyScore: {
       type: Number,
+      required: [true, "Safety score is required"],
       min: [0, "Safety score must be at least 0"],
-      max: [10, "Safety score must not exceed 10"],
+      max: [100, "Safety score must not exceed 100"],
     },
-    bestMonths: {
-      type: [String],
-      default: [],
+    summary: {
+      type: String,
+      required: [true, "Summary is required"],
+      minlength: [10, "Summary must be at least 10 characters"],
+      maxlength: [500, "Summary must not exceed 500 characters"],
     },
   },
   { timestamps: true },
@@ -108,16 +114,17 @@ const destinationSchema = new Schema<DestinationDocument>(
 
 // Text search index
 destinationSchema.index({
-  title: "text",
+  name: "text",
   country: "text",
-  description: "text",
-  category: "text",
+  region: "text",
+  summary: "text",
+  style: "text",
 });
 
 // Single field indexes for common queries
 destinationSchema.index({ country: 1 });
 destinationSchema.index({ rating: -1 });
-destinationSchema.index({ budget: 1 });
+destinationSchema.index({ budgetLevel: 1 });
 
 export const Destination =
   models.Destination ||

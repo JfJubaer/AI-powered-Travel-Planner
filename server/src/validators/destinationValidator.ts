@@ -2,8 +2,12 @@ import { z } from "zod";
 
 export const destinationQuerySchema = z.object({
   search: z.string().optional().default(""),
+  country: z.string().optional().default(""),
   style: z.string().optional().default(""),
-  budget: z.string().optional().default("")
+  budget: z.string().optional().default(""),
+  sortBy: z.enum(["rating", "popularity"]).optional().default("rating"),
+  page: z.coerce.number().int().min(1).optional().default(1),
+  limit: z.coerce.number().int().min(1).max(48).optional().default(12)
 });
 
 export const destinationIdParamSchema = z.object({
