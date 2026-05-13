@@ -18,9 +18,12 @@ npm.cmd install
 npm.cmd run dev
 ```
 
-Client: `http://localhost:3000`
+Client: `(https://ai-powered-travel-planner-client.vercel.app/)`
 
-API: `http://localhost:5000`
+API: `(https://ai-powered-travel-planner-u598.onrender.com)`
+
+Credentials : admin => jubaerkhan@gmail.com (jubaerkhan@gmail.coM1)
+              user  => skk5727@gmail.com    (sKK5727@gmail.com)
 
 ## Environment
 
