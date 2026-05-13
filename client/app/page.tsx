@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { HomepageSections } from "@/components/homepage-sections";
 import { StatusPill } from "@/components/status-pill";
 import { ArrowDown, ArrowRight, CalendarDays, DollarSign, Globe2, MapPinned, Sparkles } from "lucide-react";
 
@@ -142,6 +143,7 @@ export default function HomePage() {
           </CardContent>
         </Card>
       </section>
+      <HomepageSections />
     </main>
   );
 }
